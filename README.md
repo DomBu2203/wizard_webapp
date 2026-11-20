@@ -24,7 +24,7 @@ Reines HTML/CSS/JavaScript, ohne Build-Schritt.
 ## Aufbau
 
 - `js/engine.js` – Regeln, Spielzustand, Wertung, Sicht pro Spieler (ohne DOM)
-- `js/ai.js` – heuristische Computergegner
+- `js/ai.js` – Computergegner: Monte-Carlo-Suche über mögliche Kartenverteilungen (merkt sich gespielte Karten und Fehlfarben)
 - `js/host.js` – Host-Controller: Plätze (lokal/online/Bot), Bots steuern, Zustand verteilen
 - `js/net.js` – PeerJS-Verbindung für Host und Gäste, Heartbeat
 - `js/ui.js` – Menü, Lobby, Spieltisch

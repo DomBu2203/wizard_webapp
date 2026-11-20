@@ -89,6 +89,7 @@ class WizardGame {
     this.trumpSuit = this.trumpCard && this.trumpCard.type === 'num' ? this.trumpCard.suit : null;
     this.trick = [];
     this.lastTrick = null;
+    this.roundTricks = []; // alle fertigen Stiche dieser Runde (für die KI)
     this.tricksPlayed = 0;
     this.trickWinner = null;
     this.current = this.next(this.dealer);
@@ -162,6 +163,7 @@ class WizardGame {
     const w = this.trickWinner;
     this.players[w].tricks++;
     this.lastTrick = { cards: this.trick, winner: w };
+    this.roundTricks.push(this.lastTrick);
     this.trick = [];
     this.trickWinner = null;
     this.tricksPlayed++;
