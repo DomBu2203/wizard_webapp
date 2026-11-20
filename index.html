@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wizard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Startbildschirm -->
+  <main id="setup" class="screen">
+    <div class="setup-box wide">
+      <h1>Wizard</h1>
+      <p class="subtitle">Das Stichspiel – sage an, wie viele Stiche du machst.</p>
+      <form id="setup-form" novalidate>
+        <label>Dein Name
+          <input id="player-name" type="text" maxlength="16" value="Du" autocomplete="nickname">
+        </label>
+
+        <div class="mode-grid">
+          <section class="mode-card">
+            <h2>Online mit Freunden</h2>
+            <p class="muted">Erstelle einen Raum und schicke den Link an deine Mitspieler. Freie Plätze kannst du mit Bots füllen.</p>
+            <button id="btn-host" type="button" class="btn primary">Raum erstellen</button>
+            <div class="join-row">
+              <input id="room-code" type="text" maxlength="5" placeholder="Raumcode" autocomplete="off" aria-label="Raumcode">
+              <button id="btn-join" type="button" class="btn">Beitreten</button>
+            </div>
+          </section>
+          <section class="mode-card">
+            <h2>Gegen Computer</h2>
+            <label>Anzahl Computergegner
+              <select id="bot-count">
+                <option value="2">2 (3 Spieler, 20 Runden)</option>
+                <option value="3" selected>3 (4 Spieler, 15 Runden)</option>
+                <option value="4">4 (5 Spieler, 12 Runden)</option>
+                <option value="5">5 (6 Spieler, 10 Runden)</option>
+              </select>
+            </label>
+            <button id="btn-local" type="button" class="btn primary">Spiel starten</button>
+          </section>
+        </div>
+
+        <details class="settings">
+          <summary>Einstellungen (für eigene Spiele und Räume)</summary>
+          <label>Spieltempo der Bots
+            <select id="speed">
+              <option value="slow">Langsam</option>
+              <option value="normal" selected>Normal</option>
+              <option value="fast">Schnell</option>
+            </select>
+          </label>
+          <label class="check">
+            <input id="dealer-rule" type="checkbox">
+            Geber-Regel: Summe der Ansagen darf nicht der Kartenzahl entsprechen
+          </label>
+        </details>
+        <p id="setup-error" class="error" role="alert"></p>
+      </form>
+      <details class="rules">
+        <summary>Spielregeln</summary>
+        <ul>
+          <li>60 Karten: 4 Farben (1–13), 4 Zauberer (Z) und 4 Narren (N).</li>
+          <li>In Runde <em>n</em> bekommt jeder <em>n</em> Karten. Die nächste Karte bestimmt Trumpf. Ist es ein Zauberer, wählt der Geber die Trumpffarbe; ein Narr oder keine Karte bedeutet: kein Trumpf.</li>
+          <li>Jeder sagt an, wie viele Stiche er machen wird.</li>
+          <li>Farbe muss bedient werden. Zauberer und Narren dürfen immer gespielt werden.</li>
+          <li>Der erste Zauberer gewinnt den Stich. Sonst gewinnt der höchste Trumpf, sonst die höchste Karte der ausgespielten Farbe. Nur Narren: der erste Narr gewinnt.</li>
+          <li>Wird ein Zauberer ausgespielt, ist die Farbe frei. Bei einem ausgespielten Narren bestimmt die nächste Karte die Farbe.</li>
+          <li>Punkte: Ansage getroffen = 20 + 10 je Stich. Daneben = −10 je Stich Abweichung.</li>
+        </ul>
+      </details>
+    </div>
+  </main>
+
+  <!-- Lobby -->
+  <main id="lobby" class="screen hidden">
+    <div class="setup-box">
+      <h1 class="small-title">Lobby</h1>
+      <p id="lobby-status" class="subtitle"></p>
+      <div id="lobby-code-box" class="code-box hidden">
+        <span class="muted">Raumcode</span>
+        <div id="lobby-code" class="code"></div>
+        <button id="btn-copy" type="button" class="btn small">Einladungslink kopieren</button>
+      </div>
+      <ul id="lobby-players" class="player-list"></ul>
+      <div id="lobby-host-actions" class="lobby-actions hidden">
+        <button id="btn-add-bot" type="button" class="btn small">+ Bot</button>
+        <button id="btn-remove-bot" type="button" class="btn small">− Bot</button>
+        <button id="btn-start" type="button" class="btn primary">Spiel starten</button>
+      </div>
+      <p id="lobby-hint" class="muted center-text"></p>
+      <div class="lobby-footer">
+        <button id="btn-leave-lobby" type="button" class="btn small">Verlassen</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Spieltisch -->
+  <main id="game" class="screen hidden">
+    <header class="topbar">
+      <div class="round-info"><span id="round-label"></span><span id="room-label" class="muted"></span></div>
+      <div class="trump-info">
+        <span class="label">Trumpf</span>
+        <div id="trump-card"></div>
+        <span id="trump-name"></span>
+      </div>
+      <div class="actions">
+        <button id="btn-last-trick" class="btn small" type="button">Letzter Stich</button>
+        <button id="btn-scores" class="btn small" type="button">Punkte</button>
+        <button id="btn-leave" class="btn small" type="button">Verlassen</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <div class="table-area">
+        <section id="opponents"></section>
+        <section class="center">
+          <div id="trick"></div>
+          <div id="status" aria-live="polite"></div>
+        </section>
+        <section class="me">
+          <div id="me-info"></div>
+          <div id="bid-panel" class="hidden"></div>
+          <div id="hand"></div>
+        </section>
+      </div>
+      <aside id="scoreboard"></aside>
+    </div>
+  </main>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-box" id="modal-content"></div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/host.js"></script>
+  <script src="js/net.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
